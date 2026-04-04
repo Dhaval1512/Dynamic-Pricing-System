@@ -19,20 +19,52 @@ def home():
 def predict():
     try:
         data = request.get_json()
-        print("Incoming data:", data)
 
-        features = np.array(data["features"]).reshape(1, -1)
-        print("Features shape:", features.shape)
+        price = data["price"]
+        competitor_price = data["competitor_price"]
+        discount = data["discount"]
+        rating = data["rating"]
+        stock = data["stock"]
+        views = data["views"]
+
+        # 🔥 Feature Engineering (SAME AS TRAINING)
+        price_diff = price - competitor_price
+        price_ratio = price / (competitor_price + 1)
+        stock_pressure = views / (stock + 1)
+        discount_effect = discount * rating
+
+        features = np.array([[
+            price,
+            competitor_price,
+            discount,
+            rating,
+            stock,
+            views,
+            price_diff,
+            price_ratio,
+            stock_pressure,
+            discount_effect
+        ]])
+
         prediction = model.predict(features)[0]
-        probability = model.predict_proba(features)[0].tolist()
-        
+        probability = model.predict_proba(features)[0]
+
+        # 🎯 Business Insight
+        if prediction == 1:
+            demand_label = "High Demand 🔥"
+            suggestion = "Increase Price 📈"
+        else:
+            demand_label = "Low Demand ❄️"
+            suggestion = "Decrease Price 📉"
+
         return jsonify({
-            "prediction": int(prediction),
-            "probability": probability
+            "prediction": demand_label,
+            "confidence": float(max(probability)),
+            "suggestion": suggestion
         })
-    
+
     except Exception as e:
         return jsonify({"error": str(e)})
-
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
