@@ -38,6 +38,8 @@ function App() {
         views: Number(formData.views)
       });
 
+      console.log("API Response:", response.data);
+
       setResult(response.data);
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -117,7 +119,13 @@ function App() {
           backgroundColor: "#f1f3f5"
         }}>
           <h3>{result.prediction}</h3>
-          <p>Confidence: {(result.confidence * 100).toFixed(2)}%</p>
+          <p>
+            Confidence: {
+              result?.confidence 
+                ? (result.confidence * 100).toFixed(2) + "%"
+                : "N/A"
+            }
+          </p>
           <p>{result.suggestion}</p>
         </div>
       )}
