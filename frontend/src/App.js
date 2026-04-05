@@ -26,27 +26,31 @@ function App() {
 
   const handleSubmit = async () => {
     setLoading(true);
+    setError(null);
+    // const API_URL = "http://127.0.0.1:5000/predict"; // local
+    const API_URL = "https://dynamic-pricing-system-cfhm.onrender.com/predict"; // prod
 
     try {
-      setError(null);
-      const response = await axios.post("https://dynamic-pricing-system-cfhm.onrender.com/predict", {
-        price: Number(formData.price),
-        competitor_price: Number(formData.competitor_price),
-        discount: Number(formData.discount),
-        rating: Number(formData.rating),
-        stock: Number(formData.stock),
-        views: Number(formData.views)
-      });
+      const response = await axios.post(
+        API_URL,
+        {
+          price: Number(formData.price),
+          competitor_price: Number(formData.competitor_price),
+          discount: Number(formData.discount),
+          rating: Number(formData.rating),
+          stock: Number(formData.stock),
+          views: Number(formData.views)
+        }
+      );
 
       console.log("API Response:", response.data);
 
       setResult(response.data);
-    } catch (error) {
+
+    } catch (err) {
       setError("Something went wrong. Please try again.");
-      if (error.response) {
-        console.error("Backend Error:", error.response.data);
-      }
     }
+
     setLoading(false);
   };
 

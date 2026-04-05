@@ -2,14 +2,12 @@ from flask import Flask, request, jsonify
 import pickle
 import numpy as np
 from flask_cors import CORS
-
+import joblib
 
 app = Flask(__name__)
 CORS(app)
 
-# Load model once (important)
-with open("model/model.pkl", "rb") as f:
-    model = pickle.load(f)
+model = joblib.load("model/model.pkl")
 
 @app.route("/")
 def home():
